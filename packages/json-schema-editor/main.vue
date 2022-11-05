@@ -1,5 +1,5 @@
 <template>
-  <div class="json-schema-editor">
+  <div class="json-schema-editor" :key="pickKey">
       <a-row class="row" :gutter="10">
         <a-col :span="8" class="ant-col-name">
           <div :style="{marginLeft:`${20*deep}px`}" class="ant-col-name-c">
@@ -46,7 +46,7 @@
             <template v-slot:title>{{ local['add_child_node'] }}</template>
             <a-button type="link" class="plus-icon" @click="addChild">
               <template #icon><plus-outlined /></template>
-              
+
             </a-button>
           </a-tooltip>
           <a-tooltip v-if="!root && !isItem">
@@ -65,7 +65,7 @@
       <template v-if="isArray">
         <json-schema-editor  :value="{items:pickValue.items}" :deep="deep+1" disabled isItem :root="false" class="children" :lang="lang" :custom="custom"/>
       </template>
-      <a-modal v-model:visible="modalVisible" v-if="modalVisible" :title="local['adv_setting']" :maskClosable="false" :okText="local['ok']" :cancelText="local['cancel']" width="800px" @ok="handleOk" wrapClassName="json-schema-editor-advanced-modal">
+      <a-modal :zIndex="5000" v-model:visible="modalVisible" v-if="modalVisible" :title="local['adv_setting']" :maskClosable="false" :okText="local['ok']" :cancelText="local['cancel']" width="800px" @ok="handleOk" wrapClassName="json-schema-editor-advanced-modal">
         <h3>{{local['base_setting']}}</h3>
         <a-form :model="advancedValue" class="ant-advanced-search-form">
           <a-row :gutter="6">
@@ -82,7 +82,7 @@
                   return triggerNode.parentNode || document.body;
                 }"
                  :placeholder="local[key]"
-                > 
+                >
                   <a-select-option value="">{{ local['nothing'] }}</a-select-option>
                   <a-select-option :key="t" v-for="t in advancedAttr[key].enums">
                     {{t}}
@@ -101,7 +101,7 @@
                 <a-input v-model:value="item.value" style="width:calc(100% - 30px)"/>
                 <a-button type="link" @click="removeCustomNode(item.key)" style="width:30px">
                   <template #icon><close-outlined /></template>
-                </a-button>  
+                </a-button>
               </a-form-item>
             </a-col>
             <a-col :span="8" v-show="addProp.key != undefined">
@@ -114,15 +114,15 @@
               <a-form-item>
                 <a-button type="link" @click="confirmAddCustomNode(null)" v-if="customing">
                   <template #icon><check-outlined /></template>
-                </a-button>  
+                </a-button>
                 <a-tooltip :title="local['add_custom']" v-else>
                   <a-button type="link" @click="addCustomNode">
                     <template #icon><plus-outlined /></template>
-                  </a-button>  
+                  </a-button>
                 </a-tooltip>
               </a-form-item>
             </a-col>
-          </a-row> 
+          </a-row>
         </a-form>
         <h3>{{ local['preview'] }}</h3>
         <pre style="width:100%">{{completeNodeValue}}</pre>
@@ -257,15 +257,18 @@ export default {
     onInputName(e){
       const oldKey = this.pickKey
       const newKey = e.target.value
+      console.log(oldKey, newKey)
       if(oldKey === newKey) return
 
       const nodeValue = this.parent.properties[oldKey]
-
-      // 替换key名
-      delete this.parent.properties[oldKey]
+// console.log(nodeValue)
+console.log(this.parent.properties)
       // eslint-disable-next-line vue/no-mutating-props
       this.parent.properties[newKey] = nodeValue
-
+      // 替换key名
+      // 如果delete 没有响应式
+      // this.parent.properties[oldKey] = null
+      delete this.parent.properties[oldKey]
       // required重新设置
       const requireds = this.parent.required || []
       const oldIndex = requireds.indexOf(oldKey)
@@ -384,7 +387,7 @@ export default {
       this.customing = false
     },
     removeNode(){
-      const { properties,required } = this.parent 
+      const { properties,required } = this.parent
       delete properties[this.pickKey]
       if(required){
         const pos = required.indexOf(this.pickKey)
