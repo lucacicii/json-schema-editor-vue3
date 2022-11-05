@@ -3,55 +3,55 @@
       <a-row class="row" :gutter="10">
         <a-col :span="8" class="ant-col-name">
           <div :style="{marginLeft:`${20*deep}px`}" class="ant-col-name-c">
-            <a-button v-if="pickValue.type==='object'" type="link" style="color:rgba(0,0,0,.65)" @click="hidden = !hidden">
+            <a-button v-if="pickValue.type==='object'" link  style="color:rgba(0,0,0,.65)" @click="hidden = !hidden">
               <template #icon>
                 <caret-right-outlined v-if="hidden"/>
                 <caret-down-outlined v-else/>
               </template>
             </a-button>
             <span v-else style="width:32px;display:inline-block"></span>
-            <a-input :disabled="disabled || root" :defaultValue="pickKey" class="ant-col-name-input" @blur="onInputName"/>
+            <a-input :disabled="disabled || root" :modelValue="pickKey" class="ant-col-name-input" @blur="onInputName"/>
           </div>
           <a-tooltip v-if="root">
-            <template v-slot:title>{{ local['checked_all'] }}</template>
+            <template v-slot:content>{{ local['checked_all'] }}</template>
             <a-checkbox :disabled="!isObject && !isArray"  class="ant-col-name-required" @change="onRootCheck"/>
           </a-tooltip>
           <a-tooltip v-else>
-            <template v-slot:title>{{ local['required'] }}</template>
-            <a-checkbox :disabled="isItem" :checked="checked" class="ant-col-name-required" @change="onCheck"/>
+            <template v-slot:content>{{ local['required'] }}</template>
+            <a-checkbox :disabled="isItem" :model-value="checked" class="ant-col-name-required" @change="onCheck"/>
           </a-tooltip>
         </a-col>
         <a-col :span="4">
-          <a-select v-model:value="pickValue.type" :disabled="disabledType" class="ant-col-type" @change="onChangeType" :getPopupContainer="
+          <a-select v-model="pickValue.type" :disabled="disabledType" class="ant-col-type" @change="onChangeType" :getPopupContainer="
           triggerNode => {
             return triggerNode.parentNode || document.body;
           }"
         >
-            <a-select-option :key="t" v-for="t in TYPE_NAME">
+            <a-select-option :key="t" v-for="t in TYPE_NAME" :value="t">
               {{t}}
             </a-select-option>
           </a-select>
         </a-col>
         <a-col :span="6">
-          <a-input v-model:value="pickValue.title" class="ant-col-title" :placeholder="local['title']"/>
+          <a-input v-model="pickValue.title" class="ant-col-title" :placeholder="local['title']"/>
         </a-col>
         <a-col :span="6" class="ant-col-setting">
           <a-tooltip>
-            <template v-slot:title>{{ local['adv_setting'] }}</template>
-            <a-button type="link" class="setting-icon" @click="onSetting">
+            <template v-slot:content>{{ local['adv_setting'] }}</template>
+            <a-button link  class="setting-icon" @click="onSetting">
               <template #icon><setting-outlined /></template>
             </a-button>
           </a-tooltip>
           <a-tooltip v-if="isObject">
-            <template v-slot:title>{{ local['add_child_node'] }}</template>
-            <a-button type="link" class="plus-icon" @click="addChild">
+            <template v-slot:content>{{ local['add_child_node'] }}</template>
+            <a-button link  class="plus-icon" @click="addChild">
               <template #icon><plus-outlined /></template>
-              
+
             </a-button>
           </a-tooltip>
           <a-tooltip v-if="!root && !isItem">
-            <template v-slot:title>{{ local['remove_node'] }}</template>
-            <a-button type="link" class="close-icon ant-btn-icon-only" @click="removeNode">
+            <template v-slot:content>{{ local['remove_node'] }}</template>
+            <a-button link  class="close-icon ant-btn-icon-only" @click="removeNode">
               <i aria-label="icon: plus" class="anticon anticon-plus">
               <svg viewBox="64 64 896 896" data-icon="plus" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M810.666667 273.493333L750.506667 213.333333 512 451.84 273.493333 213.333333 213.333333 273.493333 451.84 512 213.333333 750.506667 273.493333 810.666667 512 572.16 750.506667 810.666667 810.666667 750.506667 572.16 512z" p-id="1142"></path></svg>
               </i>
@@ -65,30 +65,30 @@
       <template v-if="isArray">
         <json-schema-editor  :value="{items:pickValue.items}" :deep="deep+1" disabled isItem :root="false" class="children" :lang="lang" :custom="custom"/>
       </template>
-      <a-modal v-model:visible="modalVisible" v-if="modalVisible" :title="local['adv_setting']" :maskClosable="false" :okText="local['ok']" :cancelText="local['cancel']" width="800px" @ok="handleOk" wrapClassName="json-schema-editor-advanced-modal">
+      <a-modal v-model="modalVisible" v-if="modalVisible" :title="local['adv_setting']" :maskClosable="false" :okText="local['ok']" :cancelText="local['cancel']" width="800px" @ok="handleOk" wrapClassName="json-schema-editor-advanced-modal">
         <h3>{{local['base_setting']}}</h3>
         <a-form :model="advancedValue" class="ant-advanced-search-form">
           <a-row :gutter="6">
             <a-col :span="8" v-for="(item,key) in advancedValue" :key="key">
               <a-form-item>
                 <span>{{ local[key] }}</span>
-                <a-input-number v-model:value="advancedValue[key]" v-if="advancedAttr[key].type === 'integer' || advancedAttr[key].type === 'number'" style="width:100%" :placeholder="key"/>
+                <a-input-number v-model="advancedValue[key]" v-if="advancedAttr[key].type === 'integer' || advancedAttr[key].type === 'number'" style="width:100%" :placeholder="key"/>
                 <span v-else-if="advancedAttr[key].type === 'boolean'" style="display:inline-block;width:100%">
-                  <a-switch v-model:checked="advancedValue[key]"/>
+                  <a-switch v-model="advancedValue[key]"/>
                 </span>
-                <a-textarea @blur="changeEnumValue" :default-value="enumText" :rows="2" v-else-if="key === 'enum'" :placeholder="local['enum_msg']"></a-textarea>
-                <a-select v-else-if="advancedAttr[key].type === 'array'" v-model:value="advancedValue[key]" style="width:100%" :getPopupContainer="
+                <a-input type="textarea" @blur="changeEnumValue" :modelValue="enumText" :rows="2" v-else-if="key === 'enum'" :placeholder="local['enum_msg']"></a-input>
+                <a-select v-else-if="advancedAttr[key].type === 'array'" v-model="advancedValue[key]" style="width:100%" :getPopupContainer="
                 triggerNode => {
                   return triggerNode.parentNode || document.body;
                 }"
                  :placeholder="local[key]"
-                > 
+                >
                   <a-select-option value="">{{ local['nothing'] }}</a-select-option>
-                  <a-select-option :key="t" v-for="t in advancedAttr[key].enums">
+                  <a-select-option :key="t" v-for="t in advancedAttr[key].enums" :value="t">
                     {{t}}
                   </a-select-option>
                 </a-select>
-                <a-input v-model:value="advancedValue[key]" v-else style="width:100%" :placeholder="key"/>
+                <a-input v-model="advancedValue[key]" v-else style="width:100%" :placeholder="key"/>
               </a-form-item>
             </a-col>
           </a-row>
@@ -98,31 +98,31 @@
           <a-row :gutter="6">
             <a-col :span="8" v-for="item in customProps" :key="item.key">
               <a-form-item :label="item.key">
-                <a-input v-model:value="item.value" style="width:calc(100% - 30px)"/>
-                <a-button type="link" @click="removeCustomNode(item.key)" style="width:30px">
+                <a-input v-model="item.value" style="width:calc(100% - 30px)"/>
+                <a-button link  @click="removeCustomNode(item.key)" style="width:30px">
                   <template #icon><close-outlined /></template>
-                </a-button>  
+                </a-button>
               </a-form-item>
             </a-col>
             <a-col :span="8" v-show="addProp.key != undefined">
               <a-form-item>
-                <template #label><a-input v-model:value="addProp.key" style="width:100px"/></template>
-                <a-input v-model:value="addProp.value" style="width:100%"/>
+                <template #label><a-input v-model="addProp.key" style="width:100px"/></template>
+                <a-input v-model="addProp.value" style="width:100%"/>
               </a-form-item>
             </a-col>
             <a-col :span="8">
               <a-form-item>
-                <a-button type="link" @click="confirmAddCustomNode(null)" v-if="customing">
+                <a-button link  @click="confirmAddCustomNode(null)" v-if="customing">
                   <template #icon><check-outlined /></template>
-                </a-button>  
-                <a-tooltip :title="local['add_custom']" v-else>
-                  <a-button type="link" @click="addCustomNode">
+                </a-button>
+                <a-tooltip :content="local['add_custom']" v-else>
+                  <a-button link  @click="addCustomNode">
                     <template #icon><plus-outlined /></template>
-                  </a-button>  
+                  </a-button>
                 </a-tooltip>
               </a-form-item>
             </a-col>
-          </a-row> 
+          </a-row>
         </a-form>
         <h3>{{ local['preview'] }}</h3>
         <pre style="width:100%">{{completeNodeValue}}</pre>
@@ -132,25 +132,26 @@
 <script>
 import { isNull } from './util'
 import {TYPE_NAME, TYPE} from './type/type'
-import { Row,Col,Button,Input,InputNumber, Icon,Checkbox,Select,Tooltip,Modal,Form,Switch} from 'ant-design-vue'
+import { ElRow,ElCol,ElButton,ElInput,ElInputNumber, ElIcon,ElCheckbox,ElSelect,ElTooltip,ElDialog,ElForm,ElSwitch, ElFormItem} from 'element-plus'
 import { CaretRightOutlined,CaretDownOutlined,SettingOutlined,PlusOutlined,CloseOutlined,CheckOutlined } from '@ant-design/icons-vue';
 import LocalProvider from './LocalProvider'
 export default {
   name:'JsonSchemaEditor',
   components: {
-    ARow:Row,ACol:Col,
-    AButton: Button,
+    ARow:ElRow,ACol:ElCol,
+    AButton: ElButton,
     // eslint-disable-next-line vue/no-unused-components
-    AIcon: Icon,
-    AInput: Input,AInputNumber:InputNumber,ATextarea: Input.TextArea,
-    ACheckbox: Checkbox,
-    ASelect: Select,
-    ASelectOption:Select.Option,
-    ATooltip: Tooltip,
-    AModal:Modal,
-    AForm:Form,
-    AFormItem: Form.Item,
-    ASwitch: Switch,
+    AIcon: ElIcon,
+    AInput: ElInput,
+    AInputNumber:ElInputNumber,
+    ACheckbox: ElCheckbox,
+    ASelect: ElSelect,
+    ASelectOption:ElSelect.Option,
+    ATooltip: ElTooltip,
+    AModal:ElDialog,
+    AForm:ElForm,
+    AFormItem: ElFormItem,
+    ASwitch: ElSwitch,
     CaretRightOutlined,
     CaretDownOutlined,SettingOutlined,PlusOutlined,CloseOutlined,CheckOutlined
   },
@@ -384,7 +385,7 @@ export default {
       this.customing = false
     },
     removeNode(){
-      const { properties,required } = this.parent 
+      const { properties,required } = this.parent
       delete properties[this.pickKey]
       if(required){
         const pos = required.indexOf(this.pickKey)
