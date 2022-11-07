@@ -36,12 +36,12 @@
           <a-input v-model:value="pickValue.title" class="ant-col-title" :placeholder="local['title']"/>
         </a-col>
         <a-col :span="6" class="ant-col-setting">
-          <a-tooltip>
-            <template v-slot:title>{{ local['adv_setting'] }}</template>
-            <a-button type="link" class="setting-icon" @click="onSetting">
-              <template #icon><setting-outlined /></template>
-            </a-button>
-          </a-tooltip>
+<!--          <a-tooltip>-->
+<!--            <template v-slot:title>{{ local['adv_setting'] }}</template>-->
+<!--            <a-button type="link" class="setting-icon" @click="onSetting">-->
+<!--              <template #icon><setting-outlined /></template>-->
+<!--            </a-button>-->
+<!--          </a-tooltip>-->
           <a-tooltip v-if="isObject">
             <template v-slot:title>{{ local['add_child_node'] }}</template>
             <a-button type="link" class="plus-icon" @click="addChild">
@@ -133,7 +133,9 @@
 import { isNull } from './util'
 import {TYPE_NAME, TYPE} from './type/type'
 import { Row,Col,Button,Input,InputNumber, Icon,Checkbox,Select,Tooltip,Modal,Form,Switch} from 'ant-design-vue'
-import { CaretRightOutlined,CaretDownOutlined,SettingOutlined,PlusOutlined,CloseOutlined,CheckOutlined } from '@ant-design/icons-vue';
+import { CaretRightOutlined,CaretDownOutlined,
+  // SettingOutlined,
+  PlusOutlined,CloseOutlined,CheckOutlined } from '@ant-design/icons-vue';
 import LocalProvider from './LocalProvider'
 export default {
   name:'JsonSchemaEditor',
@@ -152,7 +154,8 @@ export default {
     AFormItem: Form.Item,
     ASwitch: Switch,
     CaretRightOutlined,
-    CaretDownOutlined,SettingOutlined,PlusOutlined,CloseOutlined,CheckOutlined
+    CaretDownOutlined,PlusOutlined,CloseOutlined,CheckOutlined,
+    // SettingOutlined
   },
   props:{
     value: {
